@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         edtSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                jobList.clear();
                 getJob();
                 return true;
             }
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnApplyFilter.setOnClickListener(view -> {
             page = null;
+            jobList.clear();
             getJob();
         });
 
@@ -185,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        jobList.clear();
         getJob();
     }
 
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Job>> call, Response<List<Job>> response) {
                 pbLoading.setVisibility(View.GONE);
-                jobList.clear();
+                isLoading = false;
                 jobList.addAll(response.body());
 
                 jobAdapter.notifyDataSetChanged();
@@ -211,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMore() {
-        if (page == null) page = 1;
+        if (page == null) page = 2;
         else page++;
         getJob();
     }
