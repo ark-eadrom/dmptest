@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DMP Test</string>
+
+    <string name="facebook_app_id">899201101314005</string>
+    <string name="fb_login_protocol_scheme">fb899201101314005</string>
+    <string name="facebook_client_token">ee109c7475016d6d120b46f2016aab8c</string>
+</resources>
