@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -38,7 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements JobAdapter.OnJobClickListener {
 
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
@@ -156,13 +158,30 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
+        edtLocation.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                location = charSequence.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         btnApplyFilter.setOnClickListener(view -> {
             page = null;
             jobList.clear();
             getJob();
         });
 
-        jobAdapter = new JobAdapter(this, jobList);
+        jobAdapter = new JobAdapter(this, jobList, this);
         rvJob.setAdapter(jobAdapter);
         rvJob.setLayoutManager(new LinearLayoutManager(this));
 
@@ -194,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
     private void getJob() {
         pbLoading.setVisibility(View.VISIBLE);
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
-        Call<List<Job>> call = apiInterface.getMoreJob(edtSearch.getText().toString(), location, fullTime, page);
+        Call<List<Job>> call = apiInterface.getJob(edtSearch.getText().toString(), location, fullTime, page);
         call.enqueue(new Callback<List<Job>>() {
             @Override
             public void onResponse(Call<List<Job>> call, Response<List<Job>> response) {
@@ -217,5 +236,12 @@ public class MainActivity extends AppCompatActivity {
         if (page == null) page = 2;
         else page++;
         getJob();
+    }
+
+    @Override
+    public void onJobClick(Job job, int position) {
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        intent.putExtra("jobId", job.id);
+        startActivity(intent);
     }
 }

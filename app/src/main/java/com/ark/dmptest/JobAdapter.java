@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -18,10 +19,16 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     List<Job> mItemList;
     Context mContext;
+    OnJobClickListener mListener;
 
-    public JobAdapter(Context context, List<Job> itemList) {
+    interface OnJobClickListener {
+        void onJobClick(Job job, int position);
+    }
+
+    public JobAdapter(Context context, List<Job> itemList, OnJobClickListener listener) {
         mItemList = itemList;
         mContext = context;
+        mListener = listener;
     }
 
     @NonNull
@@ -38,19 +45,21 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mItemList == null ? 0 : mItemList.size();
+        return mItemList == null ? 0 : mItemList.size() - 1;
     }
 
     private static class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView tvJobName, tvCompanyName, tvCompanyLocation;
         ImageView ivLogo;
-        public ItemViewHolder(@NonNull View itemView) {
+        ConstraintLayout clJob;
+        public ItemViewHolder(View itemView) {
             super(itemView);
 
             tvJobName = itemView.findViewById(R.id.tvJobName);
             tvCompanyName = itemView.findViewById(R.id.tvCompanyName);
             tvCompanyLocation = itemView.findViewById(R.id.tvCompanyLocation);
             ivLogo = itemView.findViewById(R.id.ivLogo);
+            clJob = itemView.findViewById(R.id.clJob);
         }
     }
 
@@ -59,7 +68,8 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         viewHolder.tvJobName.setText(item.title);
         viewHolder.tvCompanyName.setText(item.company);
         viewHolder.tvCompanyLocation.setText(item.location);
-        //Glide.with(mContext).load(item.url).into(viewHolder.ivLogo);
+        Glide.with(mContext).load(item.url).into(viewHolder.ivLogo);
+        viewHolder.clJob.setOnClickListener(view -> mListener.onJobClick(item, position));
     }
 
 }
